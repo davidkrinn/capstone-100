@@ -181,6 +181,23 @@ a {
   line-height: 1.8;
 }
 
+.weather-widget {
+  margin-top: 1.5rem;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.weather-widget h3 {
+  margin: 0 0 0.75rem;
+}
+
+.weather-temp {
+  margin: 1rem 0 0;
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+
 .grid-2 {
   display: grid;
   gap: 1.5rem;

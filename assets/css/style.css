@@ -115,16 +115,27 @@ a {
 }
 
 .hero-panel {
-  padding: 2rem;
-  background: var(--panel);
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px;
+  align-items: start;
+}
+
+.hero-panel .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .hero-panel h2 {
   margin: 0 0 1rem;
   font-size: 1.2rem;
+}
+
+@media (max-width: 860px) {
+  .hero-panel {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hero-panel p {
@@ -182,13 +193,19 @@ a {
 }
 
 .weather-widget {
-  margin-top: 1.5rem;
   background: rgba(15, 23, 42, 0.95);
   border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .weather-widget h3 {
   margin: 0 0 0.75rem;
+}
+
+.weather-subhead {
+  margin: 0.5rem 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .weather-temp {

@@ -1,5 +1,6 @@
 const weatherStatus = document.getElementById('weather-status');
 const weatherTemp = document.getElementById('weather-temp');
+const weatherFallbackMessage = "Looks like there's a bit of rain on this parade. Try again later or refresh your page.";
 
 const weatherConditions = {
   0: ['Clear', '☀️'],
@@ -39,7 +40,7 @@ function updateWeatherCard(weather) {
 }
 
 function handleError(message) {
-  weatherStatus.textContent = message;
+  weatherStatus.textContent = message || weatherFallbackMessage;
   weatherTemp.textContent = '—';
 }
 
@@ -53,24 +54,58 @@ function fetchWeather(lat, lon) {
       if (data.current_weather) {
         updateWeatherCard(data.current_weather);
       } else {
-        handleError('Weather data unavailable');
+        handleError(weatherFallbackMessage);
       }
     })
     .catch(() => {
-      handleError('Unable to load weather');
+      handleError(weatherFallbackMessage);
     });
 }
 
-if ('geolocation' in navigator) {
+function requestLocationAndWeather() {
+  weatherStatus.textContent = 'Please allow location access to load your weather';
+
   navigator.geolocation.getCurrentPosition(
     (position) => {
       fetchWeather(position.coords.latitude, position.coords.longitude);
     },
-    () => {
-      handleError('Enable locations to see your weather');
+    (error) => {
+      if (error.code === error.PERMISSION_DENIED) {
+        handleError(weatherFallbackMessage);
+        return;
+      }
+
+      if (error.code === error.TIMEOUT) {
+        handleError(weatherFallbackMessage);
+        return;
+      }
+
+      handleError(weatherFallbackMessage);
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
   );
-} else {
-  handleError('Geolocation not supported');
+}
+
+if (weatherStatus && weatherTemp) {
+  if (!window.isSecureContext) {
+    handleError(weatherFallbackMessage);
+  } else if (!('geolocation' in navigator)) {
+    handleError(weatherFallbackMessage);
+  } else if ('permissions' in navigator && navigator.permissions.query) {
+    navigator.permissions
+      .query({ name: 'geolocation' })
+      .then((permissionStatus) => {
+        if (permissionStatus.state === 'denied') {
+          handleError(weatherFallbackMessage);
+          return;
+        }
+
+        requestLocationAndWeather();
+      })
+      .catch(() => {
+        requestLocationAndWeather();
+      });
+  } else {
+    requestLocationAndWeather();
+  }
 }
